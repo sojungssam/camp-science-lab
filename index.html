@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실험 안전 교실</title>
+<meta name="description" content="중학교 3학년 과학 실험 안전교육 — 사이다 기체 용해도 실험, 수소 연소 실험">
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1d2330; --sub:#5b6474; --line:#e3e6ec;
+    --accent:#2563eb; --accent-soft:#e8efff;
+    --warn:#c2410c; --warn-soft:#fff3ea;
+    --danger:#dc2626; --danger-soft:#fdecec;
+    --ok:#15803d; --ok-soft:#e8f6ed;
+    --radius:18px; --scale:1;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12151b; --card:#1b2029; --ink:#eef1f6; --sub:#a3abb9; --line:#2c3340;
+      --accent:#6b9bff; --accent-soft:#1e2a44;
+      --warn:#fb923c; --warn-soft:#2e2118;
+      --danger:#f87171; --danger-soft:#2f1b1d;
+      --ok:#4ade80; --ok-soft:#16281d;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:calc(clamp(17px, 0.6vw + 14px, 22px) * var(--scale))}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; word-break:keep-all;
+    -webkit-text-size-adjust:100%;
+  }
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  /* 헤더 */
+  header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+  .brand{font-weight:800;font-size:1.25rem;letter-spacing:-0.02em}
+  .brand small{display:block;font-weight:500;font-size:.75rem;color:var(--sub)}
+  .size{display:flex;gap:6px}
+  .size button{min-width:52px;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:700}
+  nav{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{
+    flex:0 0 auto;min-height:52px;padding:0 18px;border-radius:999px;
+    border:1px solid var(--line);background:var(--card);font-weight:700;white-space:nowrap
+  }
+  nav button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  main{padding:28px 0 60px}
+  section.page{display:none;animation:fade .25s ease}
+  section.page.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  h1{font-size:2rem;line-height:1.3;letter-spacing:-0.03em;margin-bottom:8px}
+  h2{font-size:1.45rem;letter-spacing:-0.02em;margin:36px 0 14px}
+  .lead{color:var(--sub);font-size:1.05rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+  /* 홈 */
+  .rules{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:24px}
+  .rule{display:flex;gap:14px;align-items:flex-start}
+  .rule .num{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:1.2rem}
+  .rule b{display:block;font-size:1.1rem}
+  .rule span{color:var(--sub);font-size:.95rem}
+  .pick{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:16px}
+  .pick button{
+    text-align:left;padding:26px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);
+    transition:transform .15s, border-color .15s
+  }
+  .pick button:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .pick .emo{font-size:2.6rem;line-height:1}
+  .pick b{display:block;font-size:1.35rem;margin:12px 0 4px}
+  .pick span{color:var(--sub)}
+
+  /* 실험 */
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .tag{padding:6px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.9rem}
+  .mat{display:flex;flex-wrap:wrap;gap:8px}
+  .mat span{padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:.95rem}
+
+  .danger-card{border-left:6px solid var(--danger)}
+  .danger-card .ico{font-size:2rem}
+  .danger-card b{display:block;font-size:1.1rem;margin:6px 0 4px}
+  .danger-card p{color:var(--sub);font-size:.95rem}
+
+  /* 체크리스트 */
+  .check{display:grid;gap:10px}
+  .check label{
+    display:flex;gap:14px;align-items:center;padding:16px 18px;min-height:60px;
+    border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;font-size:1.05rem;
+    transition:background .15s,border-color .15s
+  }
+  .check input{width:28px;height:28px;flex:0 0 auto;accent-color:var(--ok)}
+  .check label.done{background:var(--ok-soft);border-color:var(--ok)}
+  .status{margin-top:14px;padding:18px;border-radius:14px;font-weight:800;font-size:1.15rem;text-align:center;background:var(--warn-soft);color:var(--warn)}
+  .status.ready{background:var(--ok-soft);color:var(--ok)}
+
+  /* 단계 */
+  .stepper{padding:0;overflow:hidden}
+  .bar{height:8px;background:var(--line)}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .step-body{padding:28px}
+  .step-no{color:var(--accent);font-weight:800;font-size:.95rem}
+  .step-title{font-size:1.6rem;font-weight:800;letter-spacing:-0.02em;margin:4px 0 12px}
+  .step-desc{font-size:1.15rem}
+  .warnbox{margin-top:18px;padding:18px 20px;border-radius:14px;background:var(--warn-soft);color:var(--warn);font-weight:600;font-size:1.05rem;display:flex;gap:12px}
+  .warnbox::before{content:"⚠️";flex:0 0 auto}
+  .step-nav{display:flex;justify-content:space-between;gap:10px;padding:0 28px 28px}
+  .btn{min-height:56px;padding:0 26px;border-radius:14px;font-weight:800;font-size:1.05rem;border:1px solid var(--line);background:var(--card)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn:disabled{opacity:.35;cursor:default}
+  .dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:0 28px 22px}
+  .dots button{width:14px;height:14px;border-radius:50%;background:var(--line)}
+  .dots button.on{background:var(--accent)}
+
+  /* 결과 기록 */
+  .rec{width:100%;border-collapse:collapse;font-size:1.05rem;min-width:420px}
+  .rec th,.rec td{border-bottom:1px solid var(--line);padding:12px 10px;text-align:left;vertical-align:middle}
+  .rec thead th{color:var(--sub);font-size:.9rem}
+  .rec tbody th{white-space:nowrap}
+  .rec input,.q textarea{
+    width:100%;font:inherit;color:inherit;background:var(--bg);
+    border:1px solid var(--line);border-radius:10px;padding:12px;min-height:52px;resize:vertical
+  }
+  .rec input:focus,.q textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+  .qs{display:grid;gap:12px;margin-top:14px}
+  .q b{display:block;margin-bottom:10px;font-size:1.1rem}
+  .answer{margin-top:20px;border-left:6px solid var(--accent)}
+  .answer summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}
+  .answer div{margin-top:12px;font-size:1.1rem}
+
+  /* 응급 */
+  .em b{display:flex;gap:10px;align-items:center;font-size:1.2rem;margin-bottom:10px}
+  .em ol{padding-left:1.3em}
+  .em li{margin:4px 0}
+  .callout{margin-top:20px;padding:22px;border-radius:var(--radius);background:var(--danger-soft);color:var(--danger);font-weight:800;font-size:1.2rem;text-align:center}
+
+  /* 퀴즈 */
+  .quiz{max-width:780px}
+  .q-meta{display:flex;justify-content:space-between;color:var(--sub);font-weight:700;margin-bottom:10px}
+  .q-text{font-size:1.4rem;font-weight:800;line-height:1.45;margin-bottom:20px}
+  .opts{display:grid;gap:10px}
+  .opt{
+    text-align:left;padding:18px 20px;min-height:62px;border-radius:14px;border:2px solid var(--line);
+    background:var(--card);font-size:1.1rem;font-weight:600
+  }
+  .opt:not(:disabled):hover{border-color:var(--accent)}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+  .opt.wrong{border-color:var(--danger);background:var(--danger-soft);color:var(--danger)}
+  .explain{margin-top:16px;padding:18px;border-radius:14px;background:var(--accent-soft);font-size:1.02rem;display:none}
+  .explain.on{display:block}
+  .score{text-align:center;padding:40px 20px}
+  .score .big{font-size:4rem;font-weight:900;color:var(--accent);line-height:1.1}
+
+  footer{color:var(--sub);font-size:.85rem;text-align:center;padding:30px 0}
+
+  @media (max-width:600px){
+    h1{font-size:1.6rem}
+    .step-body{padding:22px}
+    .step-nav{padding:0 22px 22px}
+    .step-title{font-size:1.35rem}
+    .btn{padding:0 18px;flex:1}
+  }
+  @media print{header,nav,.step-nav,.dots,.size{display:none}section.page{display:block!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">🧪 실험 안전 교실<small>중학교 3학년 과학</small></div>
+      <div class="size" aria-label="글자 크기">
+        <button id="fontDown" aria-label="글자 작게">가−</button>
+        <button id="fontUp" aria-label="글자 크게">가+</button>
+      </div>
+    </div>
+    <nav id="tabs" role="tablist">
+      <button data-go="home" aria-selected="true">🏠 처음</button>
+      <button data-go="soda">🥤 사이다 실험</button>
+      <button data-go="h2">🔥 수소 연소 시범</button>
+      <button data-go="emergency">🚨 응급 대처</button>
+      <button data-go="quiz">✅ 안전 퀴즈</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 처음 -->
+  <section class="page on" id="home">
+    <h1>오늘의 실험, 안전하게 시작해요</h1>
+    <p class="lead">실험 전에 위험 요소를 알고, 약속을 지키면 사고는 예방할 수 있어요.</p>
+
+    <div class="rules">
+      <div class="card rule"><div class="num">1</div><div><b>복장 정돈</b><span>긴 머리는 묶고, 소매는 걷기</span></div></div>
+      <div class="card rule"><div class="num">2</div><div><b>맛보지 않기</b><span>실험 재료는 음료라도 절대 먹지 않기</span></div></div>
+      <div class="card rule"><div class="num">3</div><div><b>장난 금지</b><span>정해진 순서대로, 자리에서 실험하기</span></div></div>
+      <div class="card rule"><div class="num">4</div><div><b>즉시 알리기</b><span>작은 사고도 바로 선생님께 말하기</span></div></div>
+    </div>
+
+    <h2>오늘 할 실험을 고르세요</h2>
+    <div class="pick">
+      <button data-go="soda">
+        <div class="emo">🥤</div>
+        <b>사이다로 알아보는 기체의 용해도</b>
+        <span>온도에 따라 기체가 얼마나 녹는지 관찰해요</span>
+      </button>
+      <button data-go="h2">
+        <div class="emo">🔥</div>
+        <b>수소의 연소 반응 (시범)</b>
+        <span>선생님이 수소 풍선에 불을 붙일 때 일어나는 변화를 관찰해요</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 실험 페이지는 JS로 채움 -->
+  <section class="page" id="soda"></section>
+  <section class="page" id="h2"></section>
+
+  <!-- 응급 대처 -->
+  <section class="page" id="emergency">
+    <h1>🚨 이럴 땐 이렇게!</h1>
+    <p class="lead">당황하지 말고, 먼저 주변에 크게 알리고 선생님을 부르세요.</p>
+    <div class="grid" style="margin-top:20px" id="emGrid"></div>
+    <div class="callout">어떤 사고든 → ① 멈추기 ② 크게 알리기 ③ 선생님 부르기</div>
+  </section>
+
+  <!-- 퀴즈 -->
+  <section class="page" id="quiz">
+    <h1>✅ 안전 퀴즈</h1>
+    <p class="lead">실험 전에 꼭 풀어 보세요. 모든 문제를 맞혀야 실험 준비 완료!</p>
+    <div class="card quiz" style="margin-top:20px" id="quizBox"></div>
+  </section>
+
+</main>
+
+<footer>실험은 반드시 선생님의 지도 아래에서 진행합니다.</footer>
+
+<script>
+/* ===================== 실험 데이터 ===================== */
+const EXP = {
+  soda: {
+    emoji: "🥤",
+    title: "사이다로 알아보는 기체의 용해도",
+    goal: "온도에 따라 사이다 속 기체의 용해도가 어떻게 달라지는지 관찰하고 설명할 수 있다.",
+    tags: ["기체의 용해도", "온도", "탄산음료"],
+    materials: ["사이다", "시험관 2개", "시험관대", "비커 2개", "얼음물", "따뜻한 물", "온도계", "시험관 집게"],
+    dangers: [
+      { ico: "♨️", t: "따뜻한 물 화상", d: "뜨거운 물은 선생님이 준비해요. 손을 넣어 온도를 재지 말고 온도계를 사용해요." },
+      { ico: "🍾", t: "닫힌 병 데우지 않기", d: "뚜껑 닫힌 사이다를 데우거나 흔들면 뚜껑이 튀어나올 수 있어요." },
+      { ico: "🧪", t: "유리 기구 파손", d: "시험관이 깨지면 손으로 줍지 말고 선생님께 알려요." },
+      { ico: "🚫", t: "마시지 않기", d: "실험에 쓴 사이다는 오염되었을 수 있어요. 절대 마시지 않아요." }
+    ],
+    checklist: [
+      "긴 머리를 묶고 소매를 걷었어요",
+      "책상 위에 실험에 필요 없는 물건을 치웠어요",
+      "실험용 사이다는 마시지 않기로 약속했어요",
+      "유리 기구에 금이 간 곳이 없는지 확인했어요",
+      "따뜻한 물은 온도계로만 확인하기로 했어요"
+    ],
+    steps: [
+      { t: "사이다 나누기", d: "시험관 2개에 사이다를 같은 양(시험관의 약 1/3)씩 조심히 따라요.", w: "사이다는 실험 재료예요. 맛보거나 마시지 않아요." },
+      { t: "얼음물과 따뜻한 물 준비", d: "비커 2개에 각각 얼음물과 따뜻한 물(약 50~60 °C)을 준비하고, 온도계로 온도를 재어 기록표에 적어요.", w: "따뜻한 물은 선생님이 나눠 줘요. 손가락을 넣어 온도를 확인하지 않아요." },
+      { t: "시험관 담그기", d: "시험관 집게로 2개의 시험관을 각 비커에 동시에 담가요.", w: "시험관 입구가 얼굴이나 친구 쪽을 향하지 않게 해요." },
+      { t: "기포 관찰·비교", d: "1~2분 동안 두 시험관에서 기포가 생기는 모습을 비교하고, 아래 기록표에 적어요.", w: "얼굴을 비커 가까이 대지 말고, 비커를 손으로 옮기지 않아요." },
+      { t: "결과 정리하기", d: "아래 ‘결과 정리’ 칸의 질문에 답하며 모둠별로 이야기해 봐요.", w: "기록은 실험이 끝난 뒤 깨끗한 자리에서 정리해요." },
+      { t: "뒷정리", d: "사용한 사이다는 개수대에 버리고 기구를 물로 헹궈요. 흘린 액체는 바로 닦고 손을 씻어요.", w: "따뜻한 물은 식은 뒤 버리고, 바닥에 흘린 액체는 미끄러우니 즉시 닦아요." }
+    ],
+    record: {
+      cols: ["구분", "물의 온도(°C)", "기포가 생기는 모습"],
+      rows: ["얼음물", "따뜻한 물"]
+    },
+    questions: [
+      "기포가 더 많이 생긴 시험관은 어느 쪽인가요?",
+      "시험관에서 나온 기포는 어떤 기체일까요?",
+      "물의 온도와 기체의 용해도는 어떤 관계가 있는지 한 문장으로 써 보세요.",
+      "이 결과로 설명할 수 있는 생활 속 예를 찾아보세요."
+    ],
+    answer: "① 따뜻한 물에 담근 시험관 ② 이산화 탄소 ③ 온도가 높을수록 기체의 용해도는 작아진다(온도가 낮을수록 커진다). ④ 차가운 탄산음료가 김이 덜 빠진다, 여름철 수온이 오르면 물속 산소가 줄어 물고기가 수면 가까이 올라온다 등"
+  },
+
+  h2: {
+    emoji: "🔥",
+    title: "수소의 연소 반응 (선생님 시범 실험)",
+    goal: "수소가 연소할 때 나타나는 변화를 관찰하고, 생성되는 물질을 설명할 수 있다.",
+    tags: ["수소", "연소", "시범 실험"],
+    materials: ["수소 풍선(선생님 준비)", "풍선 고정용 끈과 추", "긴 점화봉", "소화기", "물통"],
+    dangers: [
+      { ico: "💥", t: "큰 소리와 불꽃", d: "풍선에 불이 붙으면 큰 소리와 순간적인 불꽃이 생길 수 있어요." },
+      { ico: "📏", t: "거리 유지", d: "학생은 선생님이 정한 관람 위치에서만 관찰해요. 시범대 가까이 가지 않아요." },
+      { ico: "🎈", t: "풍선 만지지 않기", d: "수소 풍선은 불이 붙기 쉬워요. 만지거나 끈을 당기지 않아요." },
+      { ico: "🔥", t: "남은 조각 주의", d: "타고 남은 풍선 조각은 뜨거울 수 있어요. 선생님이 치울 때까지 만지지 않아요." }
+    ],
+    checklist: [
+      "선생님이 정한 관람 위치에 앉았어요",
+      "긴 머리를 묶고, 늘어진 옷이나 끈을 정리했어요",
+      "선생님 신호에 맞춰 귀를 막을 준비가 되었어요",
+      "시범대 앞으로 나가지 않기로 약속했어요",
+      "촬영할 때도 자리에서 일어나지 않기로 했어요"
+    ],
+    steps: [
+      { t: "시범 장소 준비 (선생님)", d: "천장·커튼·종이 등 탈 물건이 없는 넓은 곳에 시범대를 두고, 소화기와 물통을 준비해요. 창문을 열어 환기해요.", w: "학생은 정해진 관람 위치에서만 관찰해요." },
+      { t: "수소 풍선 살펴보기", d: "선생님이 미리 준비한 수소 풍선을 끈과 추로 고정해요. 풍선이 어떻게 움직이는지 관찰해요.", w: "풍선을 만지거나 끈을 당기지 않아요." },
+      { t: "관찰 준비", d: "무엇을 관찰할지 확인해요. ① 소리 ② 빛(불꽃) ③ 열 ④ 풍선의 변화. 선생님이 신호를 주면 귀를 막아요.", w: "몸을 시범대 쪽으로 기울이지 말고 자리에 앉아 있어요." },
+      { t: "점화 (선생님)", d: "선생님이 긴 점화봉 끝의 불꽃을 풍선에 가까이 대요. 어떤 변화가 일어나는지 집중해서 관찰해요.", w: "점화 순간에는 모두 자리에 앉아 있어요. 일어나거나 다가가지 않아요." },
+      { t: "관찰 결과 기록하기", d: "아래 ‘결과 정리’ 칸의 기록표에 관찰한 내용을 적고, 질문에 답하며 모둠별로 이야기해 봐요.", w: "선생님이 안전을 확인할 때까지 시범대 쪽으로 가지 않아요." },
+      { t: "뒷정리 (선생님)", d: "선생님이 남은 풍선 조각과 불씨를 확인하고 정리해요. 실험실을 환기해요.", w: "남은 조각은 뜨거울 수 있어요. 선생님 허락 전에는 자리를 떠나지 않아요." }
+    ],
+    record: {
+      cols: ["관찰 항목", "관찰한 내용"],
+      rows: ["풍선의 움직임 (점화 전)", "소리", "빛(불꽃)", "열", "풍선의 변화"]
+    },
+    questions: [
+      "풍선 속 수소는 공기 중의 어떤 기체와 반응했을까요?",
+      "수소가 연소하면 어떤 물질이 생길까요? 반응식으로도 나타내 보세요.",
+      "생성된 물질이 눈에 잘 보이지 않았던 까닭은 무엇일까요?",
+      "수소가 친환경 연료로 주목받는 까닭을 이 실험과 연결해 설명해 보세요."
+    ],
+    answer: "① 산소 ② 물, 2H₂ + O₂ → 2H₂O ③ 반응할 때 열이 많이 나서 물이 수증기 상태로 생성되기 때문 ④ 연소해도 이산화 탄소 없이 물만 생성되기 때문"
+  }
+};
+
+/* ===================== 응급 대처 데이터 ===================== */
+const EMERGENCY = [
+  { i: "♨️", t: "화상을 입었을 때", s: ["즉시 흐르는 시원한 물에 15분 이상 식혀요", "물집은 터뜨리지 않아요", "선생님께 알리고 보건실로 가요"] },
+  { i: "👁️", t: "눈에 이물질이 들어갔을 때", s: ["눈을 비비지 않아요", "흐르는 물로 충분히 씻어요", "바로 선생님께 알려요"] },
+  { i: "👂", t: "큰 소리에 귀가 아플 때", s: ["조용한 곳에서 잠시 쉬어요", "귀가 계속 먹먹하면 선생님께 알려요", "보건실에서 확인받아요"] },
+  { i: "🔥", t: "불이 났을 때", s: ["“불이야!” 크게 외쳐요", "작은 불은 선생님이 물·소화기로 꺼요", "학생은 침착하게 대피해요"] },
+  { i: "🧪", t: "유리 기구가 깨졌을 때", s: ["손으로 줍지 않아요", "주변 친구들이 밟지 않게 알려요", "선생님이 빗자루로 치워요"] },
+  { i: "🩹", t: "베였을 때", s: ["깨끗한 거즈로 눌러 지혈해요", "상처에 유리 조각이 있는지 확인해요", "보건실로 가요"] }
+];
+
+/* ===================== 퀴즈 데이터 ===================== */
+const QUIZ = [
+  { q: "실험에 사용하고 남은 사이다는 어떻게 해야 할까요?", o: ["시원할 때 마신다", "친구에게 나눠 준다", "개수대에 버리고 기구를 헹군다", "책상 위에 그대로 둔다"], a: 2, e: "실험 재료는 오염되었을 수 있어요. 음료라도 절대 마시지 않아요." },
+  { q: "따뜻한 물의 온도를 확인하는 올바른 방법은?", o: ["손가락을 넣어 본다", "온도계를 사용한다", "입김을 불어 본다", "비커를 손으로 잡아 본다"], a: 1, e: "화상을 막기 위해 반드시 온도계로 확인해요." },
+  { q: "뚜껑이 닫힌 사이다 병을 데우면 어떤 위험이 있을까요?", o: ["아무 일도 없다", "사이다가 얼어 버린다", "병 속 압력이 커져 뚜껑이 튀어나올 수 있다", "색깔이 변한다"], a: 2, e: "병 안의 압력이 커져 뚜껑이 튀어나오거나 병이 깨질 수 있어요." },
+  { q: "따뜻한 물이 담긴 비커는 어떻게 다뤄야 할까요?", o: ["손으로 들고 친구에게 옮긴다", "제자리에 두고, 시험관만 집게로 옮긴다", "손을 넣어 따뜻한지 확인한다", "비커를 흔들어 본다"], a: 1, e: "비커를 옮기다 쏟으면 화상을 입을 수 있어요. 시험관만 집게로 다뤄요." },
+  { q: "수소 풍선 시범 실험 때 학생이 있어야 할 곳은?", o: ["선생님이 정한 관람 위치", "풍선 바로 옆", "선생님 뒤에 붙어서", "아무 데나 괜찮다"], a: 0, e: "불꽃과 큰 소리가 나기 때문에 정해진 거리에서 관찰해요." },
+  { q: "풍선에 불을 붙이는 순간 올바른 행동은?", o: ["더 잘 보려고 일어선다", "귀를 막고 자리에 앉아 관찰한다", "풍선 쪽으로 다가간다", "친구와 장난친다"], a: 1, e: "큰 소리가 나니 신호에 맞춰 귀를 막고 자리를 지켜요." },
+  { q: "시범이 끝난 뒤 바닥에 떨어진 풍선 조각은?", o: ["기념으로 주워 간다", "손으로 만져 본다", "뜨거울 수 있으니 만지지 않고 선생님이 치운다", "발로 찬다"], a: 2, e: "타고 남은 조각은 뜨거울 수 있어 화상 위험이 있어요." },
+  { q: "시범 실험을 스마트폰으로 촬영할 때 올바른 행동은?", o: ["더 가까이 가서 찍는다", "자리에 앉은 채로 찍는다", "친구 앞으로 나가서 찍는다", "풍선을 잡고 찍는다"], a: 1, e: "촬영할 때도 정해진 관람 위치를 지켜요." },
+  { q: "눈에 이물질이 들어갔을 때 가장 먼저 할 일은?", o: ["눈을 세게 비빈다", "참고 실험을 마친다", "흐르는 물로 씻고 선생님께 알린다", "친구에게 불어 달라고 한다"], a: 2, e: "비비면 더 다쳐요. 즉시 물로 씻어 내요." },
+  { q: "시험관이 깨졌을 때 올바른 행동은?", o: ["손으로 빨리 줍는다", "발로 구석에 민다", "손대지 않고 선생님께 알린다", "모르는 척한다"], a: 2, e: "유리 조각에 베일 수 있으니 손대지 말고 바로 알려요." }
+];
+
+/* ===================== 렌더링 ===================== */
+function renderExp(key){
+  const x = EXP[key];
+  const el = document.getElementById(key);
+  el.innerHTML = `
+    <h1>${x.emoji} ${x.title}</h1>
+    <p class="lead">🎯 ${x.goal}</p>
+    <div class="tags">${x.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}</div>
+
+    <h2>⚠️ 이 실험의 위험 요소</h2>
+    <div class="grid">${x.dangers.map(d=>`
+      <div class="card danger-card"><div class="ico">${d.ico}</div><b>${d.t}</b><p>${d.d}</p></div>`).join("")}
+    </div>
+
+    <h2>🧰 준비물</h2>
+    <div class="mat">${x.materials.map(m=>`<span>${m}</span>`).join("")}</div>
+
+    <h2>✅ 실험 전 안전 점검</h2>
+    <div class="check" id="${key}-check">${x.checklist.map((c,i)=>`
+      <label><input type="checkbox" data-i="${i}"><span>${c}</span></label>`).join("")}
+    </div>
+    <div class="status" id="${key}-status"></div>
+
+    <h2>🪜 실험 순서</h2>
+    <div class="card stepper">
+      <div class="bar"><i id="${key}-bar"></i></div>
+      <div class="step-body" id="${key}-step"></div>
+      <div class="dots" id="${key}-dots"></div>
+      <div class="step-nav">
+        <button class="btn" id="${key}-prev">← 이전</button>
+        <button class="btn primary" id="${key}-next">다음 →</button>
+      </div>
+    </div>
+
+    <h2>📝 결과 정리 (학생 활동)</h2>
+    <p class="lead">관찰한 내용을 직접 적고 모둠별로 이야기해 보세요. 입력한 내용은 저장되지 않으니 활동지에도 옮겨 적어요.</p>
+    <div class="card" style="margin-top:14px;overflow-x:auto">
+      <table class="rec">
+        <thead><tr>${x.record.cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>
+        <tbody>${x.record.rows.map(r=>`<tr><th>${r}</th>${x.record.cols.slice(1).map(c=>`<td><input type="text" aria-label="${r} ${c}"></td>`).join("")}</tr>`).join("")}</tbody>
+      </table>
+    </div>
+    <div class="qs">${x.questions.map((q,i)=>`
+      <div class="card q"><b>Q${i+1}. ${q}</b><textarea rows="2" placeholder="생각을 적어 보세요" aria-label="Q${i+1}"></textarea></div>`).join("")}
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px">
+      <button class="btn" id="${key}-clear">✏️ 기록 지우기</button>
+    </div>
+    <details class="card answer">
+      <summary>👩‍🏫 선생님 확인용 (모둠 발표 후 열기)</summary>
+      <div>${x.answer}</div>
+    </details>
+  `;
+  el.querySelector(`#${key}-clear`).onclick = () => {
+    el.querySelectorAll(".rec input, .q textarea").forEach(f=>f.value="");
+  };
+
+  // 체크리스트
+  const box = el.querySelector(`#${key}-check`);
+  const status = el.querySelector(`#${key}-status`);
+  const update = () => {
+    const all = box.querySelectorAll("input");
+    const n = [...all].filter(c=>c.checked).length;
+    all.forEach(c=>c.closest("label").classList.toggle("done", c.checked));
+    if(n === all.length){
+      status.textContent = "🟢 모든 점검 완료! 실험을 시작할 수 있어요";
+      status.classList.add("ready");
+    } else {
+      status.textContent = `🟠 점검 중 (${n} / ${all.length}) — 모두 확인해야 시작해요`;
+      status.classList.remove("ready");
+    }
+  };
+  box.addEventListener("change", update);
+  update();
+
+  // 단계
+  let cur = 0;
+  const total = x.steps.length;
+  const body = el.querySelector(`#${key}-step`);
+  const bar = el.querySelector(`#${key}-bar`);
+  const dots = el.querySelector(`#${key}-dots`);
+  const prev = el.querySelector(`#${key}-prev`);
+  const next = el.querySelector(`#${key}-next`);
+  dots.innerHTML = x.steps.map((_,i)=>`<button aria-label="${i+1}단계"></button>`).join("");
+  const show = () => {
+    const s = x.steps[cur];
+    body.innerHTML = `
+      <div class="step-no">STEP ${cur+1} / ${total}</div>
+      <div class="step-title">${s.t}</div>
+      <p class="step-desc">${s.d}</p>
+      <div class="warnbox">${s.w}</div>`;
+    bar.style.width = ((cur+1)/total*100) + "%";
+    [...dots.children].forEach((d,i)=>d.classList.toggle("on", i===cur));
+    prev.disabled = cur === 0;
+    next.textContent = cur === total-1 ? "처음으로 ↺" : "다음 →";
+  };
+  prev.onclick = () => { if(cur>0){cur--; show();} };
+  next.onclick = () => { cur = cur === total-1 ? 0 : cur+1; show(); };
+  [...dots.children].forEach((d,i)=>d.onclick = ()=>{cur=i; show();});
+  show();
+}
+
+function renderEmergency(){
+  document.getElementById("emGrid").innerHTML = EMERGENCY.map(e=>`
+    <div class="card em"><b><span style="font-size:1.6rem">${e.i}</span>${e.t}</b>
+    <ol>${e.s.map(s=>`<li>${s}</li>`).join("")}</ol></div>`).join("");
+}
+
+/* 퀴즈 */
+let qi = 0, score = 0;
+function renderQuiz(){
+  const box = document.getElementById("quizBox");
+  if(qi >= QUIZ.length){
+    const perfect = score === QUIZ.length;
+    box.innerHTML = `
+      <div class="score">
+        <div class="big">${score} / ${QUIZ.length}</div>
+        <p style="font-size:1.3rem;font-weight:800;margin:14px 0 24px">
+          ${perfect ? "🎉 만점! 안전하게 실험할 준비가 되었어요" : "다시 한 번 확인해 볼까요? 틀린 문제를 기억해 두세요"}
+        </p>
+        <button class="btn primary" id="qRestart">다시 풀기 ↺</button>
+      </div>`;
+    document.getElementById("qRestart").onclick = ()=>{qi=0;score=0;renderQuiz();};
+    return;
+  }
+  const q = QUIZ[qi];
+  box.innerHTML = `
+    <div class="q-meta"><span>문제 ${qi+1} / ${QUIZ.length}</span><span>점수 ${score}</span></div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}">${["①","②","③","④"][i]} ${o}</button>`).join("")}</div>
+    <div class="explain" id="qExp"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px">
+      <button class="btn primary" id="qNext" style="display:none">${qi===QUIZ.length-1?"결과 보기":"다음 문제 →"}</button>
+    </div>`;
+  const opts = box.querySelectorAll(".opt");
+  opts.forEach(b=>b.onclick = ()=>{
+    const pick = +b.dataset.i;
+    opts.forEach(x=>x.disabled = true);
+    opts[q.a].classList.add("right");
+    if(pick === q.a){ score++; }
+    else { b.classList.add("wrong"); }
+    const ex = document.getElementById("qExp");
+    ex.innerHTML = (pick===q.a ? "⭕ <b>정답!</b> " : "❌ <b>아쉬워요.</b> ") + q.e;
+    ex.classList.add("on");
+    document.getElementById("qNext").style.display = "inline-block";
+  });
+  document.getElementById("qNext").onclick = ()=>{qi++; renderQuiz();};
+}
+
+/* ===================== 탭 이동 ===================== */
+function go(id){
+  document.querySelectorAll("section.page").forEach(s=>s.classList.toggle("on", s.id===id));
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.go===id));
+  const active = document.querySelector(`#tabs button[data-go="${id}"]`);
+  if(active) active.scrollIntoView({inline:"center", block:"nearest", behavior:"smooth"});
+  window.scrollTo({top:0, behavior:"smooth"});
+  history.replaceState(null, "", "#"+id);
+}
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-go]");
+  if(t) go(t.dataset.go);
+});
+
+/* ===================== 글자 크기 ===================== */
+let scale = 1;
+const setScale = v => {
+  scale = Math.min(1.6, Math.max(0.8, Math.round(v*10)/10));
+  document.documentElement.style.setProperty("--scale", scale);
+};
+document.getElementById("fontUp").onclick = ()=>setScale(scale+0.1);
+document.getElementById("fontDown").onclick = ()=>setScale(scale-0.1);
+
+/* ===================== 시작 ===================== */
+renderExp("soda");
+renderExp("h2");
+renderEmergency();
+renderQuiz();
+const start = location.hash.slice(1);
+if(document.getElementById(start)) go(start);
+</script>
+</body>
+</html>
