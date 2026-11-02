@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사이다 실험 안전</title>
+<meta name="description" content="중3 과학 — 사이다를 이용한 기체 용해도 실험 안전교육">
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1d2330; --sub:#5b6474; --line:#e3e6ec;
+    --accent:#2563eb; --accent-soft:#e8efff;
+    --warn:#c2410c; --warn-soft:#fff3ea;
+    --danger:#dc2626; --danger-soft:#fdecec;
+    --ok:#15803d; --ok-soft:#e8f6ed;
+    --radius:18px; --scale:1;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12151b; --card:#1b2029; --ink:#eef1f6; --sub:#a3abb9; --line:#2c3340;
+      --accent:#6b9bff; --accent-soft:#1e2a44;
+      --warn:#fb923c; --warn-soft:#2e2118;
+      --danger:#f87171; --danger-soft:#2f1b1d;
+      --ok:#4ade80; --ok-soft:#16281d;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:calc(clamp(17px, 0.6vw + 14px, 22px) * var(--scale))}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; word-break:keep-all;
+    -webkit-text-size-adjust:100%;
+  }
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+  header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+  .brand{font-weight:800;font-size:1.25rem;letter-spacing:-0.02em}
+  .brand small{display:block;font-weight:500;font-size:.75rem;color:var(--sub)}
+  .size{display:flex;gap:6px;flex:0 0 auto}
+  .size button{min-width:52px;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:700}
+  nav{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{
+    flex:0 0 auto;min-height:52px;padding:0 18px;border-radius:999px;
+    border:1px solid var(--line);background:var(--card);font-weight:700;white-space:nowrap
+  }
+  nav button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  main{padding:28px 0 60px}
+  section.page{display:none;animation:fade .25s ease}
+  section.page.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  h1{font-size:2rem;line-height:1.3;letter-spacing:-0.03em;margin-bottom:8px}
+  h2{font-size:1.45rem;letter-spacing:-0.02em;margin:36px 0 14px}
+  .lead{color:var(--sub);font-size:1.05rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+
+  .badge{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:.9rem;margin-bottom:12px}
+  .rules{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .rule{display:flex;gap:14px;align-items:flex-start}
+  .rule .num{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:1.2rem}
+  .rule b{display:block;font-size:1.1rem}
+  .rule span{color:var(--sub);font-size:.95rem}
+
+  .danger-card{border-left:6px solid var(--danger)}
+  .danger-card .ico{font-size:2rem}
+  .danger-card b{display:block;font-size:1.1rem;margin:6px 0 4px}
+  .danger-card p{color:var(--sub);font-size:.95rem}
+
+  .mat{display:flex;flex-wrap:wrap;gap:8px}
+  .mat span{padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:.95rem}
+
+  .check{display:grid;gap:10px}
+  .check label{
+    display:flex;gap:14px;align-items:center;padding:16px 18px;min-height:60px;
+    border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;font-size:1.05rem;
+    transition:background .15s,border-color .15s
+  }
+  .check input{width:28px;height:28px;flex:0 0 auto;accent-color:var(--ok)}
+  .check label.done{background:var(--ok-soft);border-color:var(--ok)}
+  .status{margin-top:14px;padding:18px;border-radius:14px;font-weight:800;font-size:1.15rem;text-align:center;background:var(--warn-soft);color:var(--warn)}
+  .status.ready{background:var(--ok-soft);color:var(--ok)}
+  .row-end{display:flex;justify-content:flex-end;margin-top:16px}
+
+  .stepper{padding:0;overflow:hidden}
+  .bar{height:8px;background:var(--line)}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .step-body{padding:28px;min-height:260px}
+  .step-no{color:var(--accent);font-weight:800;font-size:.95rem}
+  .step-title{font-size:1.7rem;font-weight:800;letter-spacing:-0.02em;margin:4px 0 12px}
+  .step-desc{font-size:1.2rem}
+  .warnbox{margin-top:18px;padding:18px 20px;border-radius:14px;background:var(--warn-soft);color:var(--warn);font-weight:600;font-size:1.08rem;display:flex;gap:12px}
+  .warnbox::before{content:"⚠️";flex:0 0 auto}
+  .step-nav{display:flex;justify-content:space-between;gap:10px;padding:0 28px 28px}
+  .btn{min-height:56px;padding:0 26px;border-radius:14px;font-weight:800;font-size:1.05rem;border:1px solid var(--line);background:var(--card)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn:disabled{opacity:.35;cursor:default}
+  .dots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 28px 22px}
+  .dots button{width:16px;height:16px;border-radius:50%;background:var(--line)}
+  .dots button.on{background:var(--accent)}
+
+  .em b{display:flex;gap:10px;align-items:center;font-size:1.2rem;margin-bottom:10px}
+  .em ol{padding-left:1.3em}
+  .em li{margin:4px 0}
+  .callout{margin-top:20px;padding:22px;border-radius:var(--radius);background:var(--danger-soft);color:var(--danger);font-weight:800;font-size:1.2rem;text-align:center}
+
+  footer{color:var(--sub);font-size:.85rem;text-align:center;padding:30px 0}
+
+  @media (max-width:600px){
+    h1{font-size:1.6rem}
+    .brand{font-size:1.05rem}
+    .step-body{padding:22px}
+    .step-nav{padding:0 22px 22px}
+    .step-title{font-size:1.4rem}
+    .btn{padding:0 18px;flex:1}
+  }
+  @media print{header,nav,.step-nav,.dots,.size,.row-end{display:none}section.page{display:block!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">🥤 사이다 실험 안전<small>중학교 3학년 과학 · 실험 안전 교실</small></div>
+      <div class="size" aria-label="글자 크기">
+        <button id="fontDown" aria-label="글자 작게">가−</button>
+        <button id="fontUp" aria-label="글자 크게">가+</button>
+      </div>
+    </div>
+    <nav id="tabs" role="tablist">
+      <button data-go="safety" aria-selected="true">📋 안전 수칙</button>
+      <button data-go="steps">🪜 실험 순서</button>
+      <button data-go="emergency">🚨 응급 대처</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="page on" id="safety"></section>
+  <section class="page" id="steps"></section>
+  <section class="page" id="emergency"></section>
+</main>
+
+<footer>실험은 반드시 선생님의 지도 아래에서 진행합니다.</footer>
+
+<script>
+const DATA = {
+  "badge": "학생 모둠 실험",
+  "emoji": "🥤",
+  "title": "사이다로 알아보는 기체의 용해도",
+  "goal": "온도에 따라 사이다 속 기체의 용해도가 어떻게 달라지는지 관찰할 수 있다.",
+  "rules": [
+    [
+      "복장 정돈",
+      "긴 머리는 묶고, 소매는 걷기"
+    ],
+    [
+      "맛보지 않기",
+      "실험 재료는 음료라도 절대 먹지 않기"
+    ],
+    [
+      "장난 금지",
+      "정해진 순서대로, 자리에서 실험하기"
+    ],
+    [
+      "즉시 알리기",
+      "작은 사고도 바로 선생님께 말하기"
+    ]
+  ],
+  "materials": [
+    "사이다",
+    "시험관 2개",
+    "시험관대",
+    "비커 2개",
+    "얼음물",
+    "따뜻한 물",
+    "시험관 집게"
+  ],
+  "dangers": [
+    {
+      "ico": "♨️",
+      "t": "따뜻한 물 화상",
+      "d": "따뜻한 물은 선생님이 준비해 줘요. 손을 넣어 온도를 확인하지 않아요."
+    },
+    {
+      "ico": "🍾",
+      "t": "닫힌 병 데우지 않기",
+      "d": "뚜껑 닫힌 사이다를 데우거나 흔들면 뚜껑이 튀어나올 수 있어요."
+    },
+    {
+      "ico": "🧪",
+      "t": "유리 기구 파손",
+      "d": "시험관이 깨지면 손으로 줍지 말고 선생님께 알려요."
+    },
+    {
+      "ico": "🚫",
+      "t": "마시지 않기",
+      "d": "실험에 쓴 사이다는 오염되었을 수 있어요. 절대 마시지 않아요."
+    }
+  ],
+  "checklist": [
+    "긴 머리를 묶고 소매를 걷었어요",
+    "책상 위에 실험에 필요 없는 물건을 치웠어요",
+    "실험용 사이다는 마시지 않기로 약속했어요",
+    "유리 기구에 금이 간 곳이 없는지 확인했어요",
+    "따뜻한 물에 손을 넣지 않기로 약속했어요"
+  ],
+  "steps": [
+    {
+      "t": "사이다 나누기",
+      "d": "시험관 2개에 사이다를 같은 양(시험관의 약 1/3)씩 조심히 따라요.",
+      "w": "사이다는 실험 재료예요. 맛보거나 마시지 않아요."
+    },
+    {
+      "t": "얼음물과 따뜻한 물 받기",
+      "d": "비커 2개에 각각 얼음물과 따뜻한 물을 받아 시험관대 옆에 놓아요.",
+      "w": "따뜻한 물은 선생님이 나눠 줘요. 손을 넣거나 비커를 들고 돌아다니지 않아요."
+    },
+    {
+      "t": "시험관 담그기",
+      "d": "시험관 집게로 2개의 시험관을 각 비커에 동시에 담가요.",
+      "w": "시험관 입구가 얼굴이나 친구 쪽을 향하지 않게 해요."
+    },
+    {
+      "t": "기포 관찰하기",
+      "d": "1~2분 동안 두 시험관에서 기포가 생기는 모습을 비교하며 관찰해요.",
+      "w": "얼굴을 비커 가까이 대지 말고, 비커를 손으로 옮기지 않아요."
+    },
+    {
+      "t": "뒷정리",
+      "d": "사용한 사이다는 개수대에 버리고 기구를 물로 헹궈요. 흘린 액체는 바로 닦고 손을 씻어요.",
+      "w": "따뜻한 물은 식은 뒤 버리고, 바닥에 흘린 액체는 미끄러우니 즉시 닦아요."
+    }
+  ],
+  "emergency": [
+    {
+      "i": "♨️",
+      "t": "화상을 입었을 때",
+      "s": [
+        "즉시 흐르는 시원한 물에 15분 이상 식혀요",
+        "물집은 터뜨리지 않아요",
+        "선생님께 알리고 보건실로 가요"
+      ]
+    },
+    {
+      "i": "🧪",
+      "t": "유리 기구가 깨졌을 때",
+      "s": [
+        "손으로 줍지 않아요",
+        "주변 친구들이 밟지 않게 알려요",
+        "선생님이 빗자루로 치워요"
+      ]
+    },
+    {
+      "i": "🩹",
+      "t": "베였을 때",
+      "s": [
+        "깨끗한 거즈로 눌러 지혈해요",
+        "상처에 유리 조각이 있는지 확인해요",
+        "보건실로 가요"
+      ]
+    },
+    {
+      "i": "💧",
+      "t": "물·사이다를 쏟았을 때",
+      "s": [
+        "주변 친구들에게 미끄럽다고 알려요",
+        "따뜻한 물이면 몸에 닿았는지 확인해요",
+        "걸레로 바로 닦아요"
+      ]
+    }
+  ]
+};
+
+/* ---------- 안전 수칙 ---------- */
+function renderSafety(){
+  const x = DATA;
+  document.getElementById("safety").innerHTML = `
+    <span class="badge">${x.badge}</span>
+    <h1>${x.emoji} ${x.title}</h1>
+    <p class="lead">🎯 ${x.goal}</p>
+
+    <h2>🤝 우리의 약속</h2>
+    <div class="rules">${x.rules.map((r,i)=>`
+      <div class="card rule"><div class="num">${i+1}</div><div><b>${r[0]}</b><span>${r[1]}</span></div></div>`).join("")}
+    </div>
+
+    <h2>⚠️ 이 실험의 위험 요소</h2>
+    <div class="grid">${x.dangers.map(d=>`
+      <div class="card danger-card"><div class="ico">${d.ico}</div><b>${d.t}</b><p>${d.d}</p></div>`).join("")}
+    </div>
+
+    <h2>🧰 준비물</h2>
+    <div class="mat">${x.materials.map(m=>`<span>${m}</span>`).join("")}</div>
+
+    <h2>✅ 실험 전 안전 점검</h2>
+    <div class="check" id="check">${x.checklist.map(c=>`
+      <label><input type="checkbox"><span>${c}</span></label>`).join("")}
+    </div>
+    <div class="status" id="status"></div>
+    <div class="row-end">
+      <button class="btn" id="reset">↺ 점검 초기화</button>
+      <button class="btn primary" data-go="steps" style="margin-left:10px">실험 순서 보기 →</button>
+    </div>
+  `;
+  const box = document.getElementById("check");
+  const status = document.getElementById("status");
+  const update = () => {
+    const all = box.querySelectorAll("input");
+    const n = [...all].filter(c=>c.checked).length;
+    all.forEach(c=>c.closest("label").classList.toggle("done", c.checked));
+    const ready = n === all.length;
+    status.textContent = ready
+      ? "🟢 모든 점검 완료! 실험을 시작할 수 있어요"
+      : `🟠 점검 중 (${n} / ${all.length}) — 모두 확인해야 시작해요`;
+    status.classList.toggle("ready", ready);
+  };
+  box.addEventListener("change", update);
+  document.getElementById("reset").onclick = () => { box.querySelectorAll("input").forEach(c=>c.checked=false); update(); };
+  update();
+}
+
+/* ---------- 실험 순서 ---------- */
+function renderSteps(){
+  const x = DATA, total = x.steps.length;
+  const el = document.getElementById("steps");
+  el.innerHTML = `
+    <h1>🪜 실험 순서</h1>
+    <p class="lead">한 단계씩 넘기며, 단계마다 주의할 점을 함께 확인해요.</p>
+    <div class="card stepper" style="margin-top:20px">
+      <div class="bar"><i id="bar"></i></div>
+      <div class="step-body" id="stepBody"></div>
+      <div class="dots" id="dots">${x.steps.map((_,i)=>`<button aria-label="${i+1}단계"></button>`).join("")}</div>
+      <div class="step-nav">
+        <button class="btn" id="prev">← 이전</button>
+        <button class="btn primary" id="next">다음 →</button>
+      </div>
+    </div>`;
+  let cur = 0;
+  const body = el.querySelector("#stepBody"), bar = el.querySelector("#bar"),
+        dots = [...el.querySelector("#dots").children], prev = el.querySelector("#prev"), next = el.querySelector("#next");
+  const show = () => {
+    const s = x.steps[cur];
+    body.innerHTML = `
+      <div class="step-no">STEP ${cur+1} / ${total}</div>
+      <div class="step-title">${s.t}</div>
+      <p class="step-desc">${s.d}</p>
+      <div class="warnbox">${s.w}</div>`;
+    bar.style.width = ((cur+1)/total*100) + "%";
+    dots.forEach((d,i)=>d.classList.toggle("on", i===cur));
+    prev.disabled = cur === 0;
+    next.textContent = cur === total-1 ? "처음으로 ↺" : "다음 →";
+  };
+  prev.onclick = () => { if(cur>0){ cur--; show(); } };
+  next.onclick = () => { cur = cur === total-1 ? 0 : cur+1; show(); };
+  dots.forEach((d,i)=>d.onclick = ()=>{ cur=i; show(); });
+  document.addEventListener("keydown", e=>{
+    if(!el.classList.contains("on")) return;
+    if(e.key==="ArrowRight"){ next.click(); }
+    if(e.key==="ArrowLeft"){ prev.click(); }
+  });
+  show();
+}
+
+/* ---------- 응급 대처 ---------- */
+function renderEmergency(){
+  document.getElementById("emergency").innerHTML = `
+    <h1>🚨 이럴 땐 이렇게!</h1>
+    <p class="lead">당황하지 말고, 먼저 주변에 크게 알리고 선생님을 부르세요.</p>
+    <div class="grid" style="margin-top:20px">${DATA.emergency.map(e=>`
+      <div class="card em"><b><span style="font-size:1.6rem">${e.i}</span>${e.t}</b>
+      <ol>${e.s.map(s=>`<li>${s}</li>`).join("")}</ol></div>`).join("")}
+    </div>
+    <div class="callout">어떤 사고든 → ① 멈추기 ② 크게 알리기 ③ 선생님 부르기</div>`;
+}
+
+/* ---------- 탭 이동 ---------- */
+function go(id){
+  document.querySelectorAll("section.page").forEach(s=>s.classList.toggle("on", s.id===id));
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.go===id));
+  window.scrollTo({top:0, behavior:"smooth"});
+  history.replaceState(null, "", "#"+id);
+}
+document.addEventListener("click", e=>{
+  const t = e.target.closest("[data-go]");
+  if(t) go(t.dataset.go);
+});
+
+/* ---------- 글자 크기 ---------- */
+let scale = 1;
+const setScale = v => {
+  scale = Math.min(1.6, Math.max(0.8, Math.round(v*10)/10));
+  document.documentElement.style.setProperty("--scale", scale);
+};
+document.getElementById("fontUp").onclick = ()=>setScale(scale+0.1);
+document.getElementById("fontDown").onclick = ()=>setScale(scale-0.1);
+
+/* ---------- 시작 ---------- */
+renderSafety(); renderSteps(); renderEmergency();
+const start = location.hash.slice(1);
+if(document.getElementById(start)) go(start);
+</script>
+</body>
+</html>
