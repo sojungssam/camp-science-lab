@@ -133,7 +133,6 @@
     </div>
     <nav id="tabs" role="tablist">
       <button data-go="safety" aria-selected="true">📋 안전 수칙</button>
-      <button data-go="steps">🪜 실험 순서</button>
       <button data-go="emergency">🚨 응급 대처</button>
     </nav>
   </div>
@@ -141,7 +140,6 @@
 
 <main class="wrap">
   <section class="page on" id="safety"></section>
-  <section class="page" id="steps"></section>
   <section class="page" id="emergency"></section>
 </main>
 
@@ -171,13 +169,6 @@ const DATA = {
       "몸이 불편하면 바로 선생님께 말하기"
     ]
   ],
-  "materials": [
-    "수소 풍선(선생님 준비)",
-    "풍선 고정용 끈과 추",
-    "긴 점화봉",
-    "소화기",
-    "물통"
-  ],
   "dangers": [
     {
       "ico": "💥",
@@ -202,37 +193,8 @@ const DATA = {
   ],
   "checklist": [
     "선생님이 정한 관람 위치에 앉았어요",
-    "긴 머리를 묶고, 늘어진 옷이나 끈을 정리했어요",
     "선생님 신호에 맞춰 귀를 막을 준비가 되었어요",
-    "시범대 앞으로 나가지 않기로 약속했어요",
-    "촬영할 때도 자리에서 일어나지 않기로 했어요"
-  ],
-  "steps": [
-    {
-      "t": "시범 장소 준비 (선생님)",
-      "d": "천장·커튼·종이 등 탈 물건이 없는 넓은 곳에 시범대를 두고, 소화기와 물통을 준비해요. 창문을 열어 환기해요.",
-      "w": "학생은 정해진 관람 위치에 앉아 기다려요."
-    },
-    {
-      "t": "수소 풍선 살펴보기",
-      "d": "선생님이 미리 준비한 수소 풍선을 끈과 추로 고정해요. 풍선이 어떻게 움직이는지 관찰해요.",
-      "w": "풍선을 만지거나 끈을 당기지 않아요."
-    },
-    {
-      "t": "관찰 준비",
-      "d": "무엇을 관찰할지 확인해요. ① 소리 ② 빛(불꽃) ③ 열 ④ 풍선의 변화. 선생님이 신호를 주면 귀를 막아요.",
-      "w": "몸을 시범대 쪽으로 기울이지 말고 자리에 앉아 있어요."
-    },
-    {
-      "t": "점화 (선생님)",
-      "d": "선생님이 긴 점화봉 끝의 불꽃을 풍선에 가까이 대요. 어떤 변화가 일어나는지 집중해서 관찰해요.",
-      "w": "점화 순간에는 모두 자리에 앉아 있어요. 일어나거나 다가가지 않아요."
-    },
-    {
-      "t": "뒷정리 (선생님)",
-      "d": "선생님이 남은 풍선 조각과 불씨를 확인하고 정리해요. 실험실을 환기해요.",
-      "w": "선생님이 안전을 확인할 때까지 자리를 지키고, 남은 조각은 만지지 않아요."
-    }
+    "시범대 앞으로 나가지 않기로 약속했어요"
   ],
   "emergency": [
     {
@@ -292,9 +254,6 @@ function renderSafety(){
       <div class="card danger-card"><div class="ico">${d.ico}</div><b>${d.t}</b><p>${d.d}</p></div>`).join("")}
     </div>
 
-    <h2>🧰 준비물</h2>
-    <div class="mat">${x.materials.map(m=>`<span>${m}</span>`).join("")}</div>
-
     <h2>✅ 실험 전 안전 점검</h2>
     <div class="check" id="check">${x.checklist.map(c=>`
       <label><input type="checkbox"><span>${c}</span></label>`).join("")}
@@ -302,7 +261,6 @@ function renderSafety(){
     <div class="status" id="status"></div>
     <div class="row-end">
       <button class="btn" id="reset">↺ 점검 초기화</button>
-      <button class="btn primary" data-go="steps" style="margin-left:10px">실험 순서 보기 →</button>
     </div>
   `;
   const box = document.getElementById("check");
@@ -320,48 +278,6 @@ function renderSafety(){
   box.addEventListener("change", update);
   document.getElementById("reset").onclick = () => { box.querySelectorAll("input").forEach(c=>c.checked=false); update(); };
   update();
-}
-
-/* ---------- 실험 순서 ---------- */
-function renderSteps(){
-  const x = DATA, total = x.steps.length;
-  const el = document.getElementById("steps");
-  el.innerHTML = `
-    <h1>🪜 실험 순서</h1>
-    <p class="lead">한 단계씩 넘기며, 단계마다 주의할 점을 함께 확인해요.</p>
-    <div class="card stepper" style="margin-top:20px">
-      <div class="bar"><i id="bar"></i></div>
-      <div class="step-body" id="stepBody"></div>
-      <div class="dots" id="dots">${x.steps.map((_,i)=>`<button aria-label="${i+1}단계"></button>`).join("")}</div>
-      <div class="step-nav">
-        <button class="btn" id="prev">← 이전</button>
-        <button class="btn primary" id="next">다음 →</button>
-      </div>
-    </div>`;
-  let cur = 0;
-  const body = el.querySelector("#stepBody"), bar = el.querySelector("#bar"),
-        dots = [...el.querySelector("#dots").children], prev = el.querySelector("#prev"), next = el.querySelector("#next");
-  const show = () => {
-    const s = x.steps[cur];
-    body.innerHTML = `
-      <div class="step-no">STEP ${cur+1} / ${total}</div>
-      <div class="step-title">${s.t}</div>
-      <p class="step-desc">${s.d}</p>
-      <div class="warnbox">${s.w}</div>`;
-    bar.style.width = ((cur+1)/total*100) + "%";
-    dots.forEach((d,i)=>d.classList.toggle("on", i===cur));
-    prev.disabled = cur === 0;
-    next.textContent = cur === total-1 ? "처음으로 ↺" : "다음 →";
-  };
-  prev.onclick = () => { if(cur>0){ cur--; show(); } };
-  next.onclick = () => { cur = cur === total-1 ? 0 : cur+1; show(); };
-  dots.forEach((d,i)=>d.onclick = ()=>{ cur=i; show(); });
-  document.addEventListener("keydown", e=>{
-    if(!el.classList.contains("on")) return;
-    if(e.key==="ArrowRight"){ next.click(); }
-    if(e.key==="ArrowLeft"){ prev.click(); }
-  });
-  show();
 }
 
 /* ---------- 응급 대처 ---------- */
@@ -398,7 +314,7 @@ document.getElementById("fontUp").onclick = ()=>setScale(scale+0.1);
 document.getElementById("fontDown").onclick = ()=>setScale(scale-0.1);
 
 /* ---------- 시작 ---------- */
-renderSafety(); renderSteps(); renderEmergency();
+renderSafety(); renderEmergency();
 const start = location.hash.slice(1);
 if(document.getElementById(start)) go(start);
 </script>
