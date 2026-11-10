@@ -133,7 +133,6 @@
     </div>
     <nav id="tabs" role="tablist">
       <button data-go="safety" aria-selected="true">📋 안전 수칙</button>
-      <button data-go="steps">🪜 실험 순서</button>
       <button data-go="emergency">🚨 응급 대처</button>
     </nav>
   </div>
@@ -141,7 +140,6 @@
 
 <main class="wrap">
   <section class="page on" id="safety"></section>
-  <section class="page" id="steps"></section>
   <section class="page" id="emergency"></section>
 </main>
 
@@ -155,10 +153,6 @@ const DATA = {
   "goal": "온도에 따라 사이다 속 기체의 용해도가 어떻게 달라지는지 관찰할 수 있다.",
   "rules": [
     [
-      "복장 정돈",
-      "긴 머리는 묶고, 소매는 걷기"
-    ],
-    [
       "맛보지 않기",
       "실험 재료는 음료라도 절대 먹지 않기"
     ],
@@ -170,15 +164,6 @@ const DATA = {
       "즉시 알리기",
       "작은 사고도 바로 선생님께 말하기"
     ]
-  ],
-  "materials": [
-    "사이다",
-    "시험관 2개",
-    "시험관대",
-    "비커 2개",
-    "얼음물",
-    "따뜻한 물",
-    "시험관 집게"
   ],
   "dangers": [
     {
@@ -203,38 +188,10 @@ const DATA = {
     }
   ],
   "checklist": [
-    "긴 머리를 묶고 소매를 걷었어요",
     "책상 위에 실험에 필요 없는 물건을 치웠어요",
     "실험용 사이다는 마시지 않기로 약속했어요",
     "유리 기구에 금이 간 곳이 없는지 확인했어요",
     "따뜻한 물에 손을 넣지 않기로 약속했어요"
-  ],
-  "steps": [
-    {
-      "t": "사이다 나누기",
-      "d": "시험관 2개에 사이다를 같은 양(시험관의 약 1/3)씩 조심히 따라요.",
-      "w": "사이다는 실험 재료예요. 맛보거나 마시지 않아요."
-    },
-    {
-      "t": "얼음물과 따뜻한 물 받기",
-      "d": "비커 2개에 각각 얼음물과 따뜻한 물을 받아 시험관대 옆에 놓아요.",
-      "w": "따뜻한 물은 선생님이 나눠 줘요. 손을 넣거나 비커를 들고 돌아다니지 않아요."
-    },
-    {
-      "t": "시험관 담그기",
-      "d": "시험관 집게로 2개의 시험관을 각 비커에 동시에 담가요.",
-      "w": "시험관 입구가 얼굴이나 친구 쪽을 향하지 않게 해요."
-    },
-    {
-      "t": "기포 관찰하기",
-      "d": "1~2분 동안 두 시험관에서 기포가 생기는 모습을 비교하며 관찰해요.",
-      "w": "얼굴을 비커 가까이 대지 말고, 비커를 손으로 옮기지 않아요."
-    },
-    {
-      "t": "뒷정리",
-      "d": "사용한 사이다는 개수대에 버리고 기구를 물로 헹궈요. 흘린 액체는 바로 닦고 손을 씻어요.",
-      "w": "따뜻한 물은 식은 뒤 버리고, 바닥에 흘린 액체는 미끄러우니 즉시 닦아요."
-    }
   ],
   "emergency": [
     {
@@ -294,9 +251,6 @@ function renderSafety(){
       <div class="card danger-card"><div class="ico">${d.ico}</div><b>${d.t}</b><p>${d.d}</p></div>`).join("")}
     </div>
 
-    <h2>🧰 준비물</h2>
-    <div class="mat">${x.materials.map(m=>`<span>${m}</span>`).join("")}</div>
-
     <h2>✅ 실험 전 안전 점검</h2>
     <div class="check" id="check">${x.checklist.map(c=>`
       <label><input type="checkbox"><span>${c}</span></label>`).join("")}
@@ -304,7 +258,6 @@ function renderSafety(){
     <div class="status" id="status"></div>
     <div class="row-end">
       <button class="btn" id="reset">↺ 점검 초기화</button>
-      <button class="btn primary" data-go="steps" style="margin-left:10px">실험 순서 보기 →</button>
     </div>
   `;
   const box = document.getElementById("check");
@@ -322,48 +275,6 @@ function renderSafety(){
   box.addEventListener("change", update);
   document.getElementById("reset").onclick = () => { box.querySelectorAll("input").forEach(c=>c.checked=false); update(); };
   update();
-}
-
-/* ---------- 실험 순서 ---------- */
-function renderSteps(){
-  const x = DATA, total = x.steps.length;
-  const el = document.getElementById("steps");
-  el.innerHTML = `
-    <h1>🪜 실험 순서</h1>
-    <p class="lead">한 단계씩 넘기며, 단계마다 주의할 점을 함께 확인해요.</p>
-    <div class="card stepper" style="margin-top:20px">
-      <div class="bar"><i id="bar"></i></div>
-      <div class="step-body" id="stepBody"></div>
-      <div class="dots" id="dots">${x.steps.map((_,i)=>`<button aria-label="${i+1}단계"></button>`).join("")}</div>
-      <div class="step-nav">
-        <button class="btn" id="prev">← 이전</button>
-        <button class="btn primary" id="next">다음 →</button>
-      </div>
-    </div>`;
-  let cur = 0;
-  const body = el.querySelector("#stepBody"), bar = el.querySelector("#bar"),
-        dots = [...el.querySelector("#dots").children], prev = el.querySelector("#prev"), next = el.querySelector("#next");
-  const show = () => {
-    const s = x.steps[cur];
-    body.innerHTML = `
-      <div class="step-no">STEP ${cur+1} / ${total}</div>
-      <div class="step-title">${s.t}</div>
-      <p class="step-desc">${s.d}</p>
-      <div class="warnbox">${s.w}</div>`;
-    bar.style.width = ((cur+1)/total*100) + "%";
-    dots.forEach((d,i)=>d.classList.toggle("on", i===cur));
-    prev.disabled = cur === 0;
-    next.textContent = cur === total-1 ? "처음으로 ↺" : "다음 →";
-  };
-  prev.onclick = () => { if(cur>0){ cur--; show(); } };
-  next.onclick = () => { cur = cur === total-1 ? 0 : cur+1; show(); };
-  dots.forEach((d,i)=>d.onclick = ()=>{ cur=i; show(); });
-  document.addEventListener("keydown", e=>{
-    if(!el.classList.contains("on")) return;
-    if(e.key==="ArrowRight"){ next.click(); }
-    if(e.key==="ArrowLeft"){ prev.click(); }
-  });
-  show();
 }
 
 /* ---------- 응급 대처 ---------- */
@@ -400,7 +311,7 @@ document.getElementById("fontUp").onclick = ()=>setScale(scale+0.1);
 document.getElementById("fontDown").onclick = ()=>setScale(scale-0.1);
 
 /* ---------- 시작 ---------- */
-renderSafety(); renderSteps(); renderEmergency();
+renderSafety(); renderEmergency();
 const start = location.hash.slice(1);
 if(document.getElementById(start)) go(start);
 </script>
